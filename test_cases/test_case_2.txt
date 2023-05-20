@@ -1,0 +1,10 @@
+Patient 2 (Sarah) - Allergies:
+1. Onset: These symptoms have been bothering me for a while.
+2. Location: The symptoms primarily affect my respiratory system and eyes.
+3. Duration: They tend to last for extended periods of time.
+4. Characteristics: I experience sneezing, itching in my eyes and nose, and my eyes get watery.
+5. Aggravating factors: I've noticed that certain environmental factors trigger my symptoms.
+6. Relieving factors: Taking certain measures and staying indoors during certain periods seem to provide some relief.
+7. Timing: The symptoms appear to be more noticeable during specific seasons.
+8. Severity: I would rate the severity of my symptoms as manageable.
+
