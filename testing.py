@@ -3,6 +3,13 @@ import re
 guidance.llm = guidance.llms.OpenAI("gpt-3.5-turbo")
 guidance.llm.cache.clear()
 
+# essentially precharting
+# valid only if done day of patient visit
+# example usage: patient checks into hospital
+#   while waiting for someone to meet, talk to this program
+#   program can note information about patient's visit
+#   for use when a PCP meets with them
+
 prompt = guidance(
 '''{{#system~}}
 You are a chatbot designed to talk to people who are have some medical concerns they want addressed.
