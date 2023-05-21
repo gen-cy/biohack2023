@@ -6,6 +6,26 @@ guidance.llm = guidance.llms.OpenAI("gpt-3.5-turbo")
 guidance.llm.cache.clear()
 
 # helpers
+def select_language():
+    prompt_menu = '''
+    Please select the language:\n
+    \n\t1. English\n
+    \n\t2. Hindi\n
+    \n\t3. Chinese\n
+    '''
+    print(prompt_menu)
+    transcribe_to_speech(prompt_menu)
+    choice = input("Enter your choice (1, 2, or 3)")
+    if choice == '1':
+        return "en-US"
+    elif choice == '2':
+        return "hi-IN"
+    elif choice == '3':
+        return "zh-CN"
+    else:
+        print("Invalid choice. Defaulting to English.")
+        return "en-US"
+    
 
 # need to fix lol
 def strip_assistant(text):
@@ -78,6 +98,9 @@ From the following prompt, extract information about the patient's problems to p
 {{~/assistant}}
 {{~/geneach}}''')
 
+
+source_lang = select_language()
+
 initmsg = "What symptoms or medical concerns are you experiencing today?\n"
 print(initmsg)
 transcribe_to_speech(initmsg)
@@ -86,7 +109,7 @@ while True:
     # user_input = input("User: ")
     asst_output = []
     # user_text = str(user_input)
-    user_input = str(recognize_from_microphone())
+    user_input = str(recognize_from_microphone(source_lang))
     print("\tUser said: {}".format(user_input))
     prompt = prompt(user_text = user_input, max_tokens = 50)
 
