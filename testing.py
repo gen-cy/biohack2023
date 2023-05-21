@@ -1,4 +1,5 @@
 import guidance
+from deep_translator import GoogleTranslator
 import re
 from text_to_speech import transcribe_to_speech
 from speech_to_text import recognize_from_microphone
@@ -12,21 +13,27 @@ def select_language():
     \n\t1. English\n
     \n\t2. Hindi\n
     \n\t3. Chinese\n
+    \n\t4. Japanese\n
     '''
     print(prompt_menu)
     transcribe_to_speech(prompt_menu)
-    choice = input("Enter your choice (1, 2, or 3)")
+    choice = input("Enter your choice (1, 2, or 3): ")
     if choice == '1':
-        return "en-US", "en-US-JennyMultilingualNeural"
+        return "en-US", "en-US-JennyMultilingualNeural", "en"
     elif choice == '2':
-        return "hi-IN", "hi-IN-SwaraNeural"
+        return "hi-IN", "hi-IN-SwaraNeural", "hi"
     elif choice == '3':
-        return "zh-CN", "zh-CN-XiaoxiaoNeural"
+        return "zh-CN", "zh-CN-XiaoxiaoNeural", "zh-CN"
+    elif choice == '4':
+        return "ja-JP", "ja-JP-ShioriNeural", "ja"
     else:
         print("Invalid choice. Defaulting to English.")
         return "en-US", "en-US-JennyMultilingualNeural"
     
-
+def translate_lang(input, target="en"):
+    if(target == "en"):
+        return input
+    return GoogleTranslator(source='auto', target=target).translate(input)
 # need to fix lol
 def strip_assistant(text):
     stripped_text = text.replace('\<\|im_start\|\>assistant', '').replace('\<\|im_end\|\>', '').replace('\n','')
@@ -76,18 +83,15 @@ prompt = guidance(
 '''{{#system~}}
 You are a chatbot designed to talk to patients who have some medical concerns they want addressed.
 DO NOT ASK THE PATIENT MORE THAN ONE QUESTION AT A TIME.
-DO NOT HAVE MULTIPLE INQUIRIES IN EACH RESPONSE, MEANING DO NOT HAVE A LIST OF QUESTIONS IN EACH RESPONSE 
-Request to elicit a concise answer or a more focused explanation.
-Do not ask a question when the patient has previously mentioned about it.
-Ask the patient information about the onset, location, duration, characteristics, aggravating factors, relieveing factors, timing, and severity of what the patient is feeling.
-This is not to provide suggestions on what the patient can do, but the information will be passed to a primary healthcare provider to follow up with the patient. 
-Since you do not know the patient's illness or sickness, ask qualifying questions about their problems.
+
+Ask the patient information about the onset, location, duration, characteristics, aggravating factors, relieveing factors, timing, and severity of what the user is feeling.
+This is not to provide suggestions on what the user can do, but the information will be passed to a primary healthcare provider to follow up with the user. 
+Since you do not know the user's illness or sickness, ask qualifying questions about their problems.
 Avoid repeating what the patient just said back to them.
 If needed, ask for clarifications in a simple manner. Ask for these clarifications one at a time.
 Express empathy regarding the concerns and problems the patient is facing.
-Depending on the response from the patient, adjust the language complexity to match the patient's language.
 Once the information has been gathered, output this text word for word: 'Thank you, a healthcare provider will see you shortly.'
-Please limit yourself to 50 tokens in the responses, unless specified.
+Please limit yourself to 50 tokens in the response, unless told.
 {{~/system}}
 
 
@@ -102,9 +106,10 @@ From the following prompt, extract information about the patient's problems to p
 {{~/geneach}}''')
 
 
-source_lang, voice_model = select_language()
+source_lang, voice_model, translate_language_key = select_language()
 
-initmsg = "What symptoms or medical concerns are you experiencing today?\n"
+
+initmsg = translate_lang("What symptoms or medical concerns are you experiencing today?\n", translate_language_key)
 print(initmsg)
 transcribe_to_speech(initmsg, voice_model)
 
@@ -127,9 +132,12 @@ while True:
     msgtoprint = asst_output[-1][21:-10]
     print("printing response")
     print(msgtoprint)
+    translatedmsg = translate_lang(msgtoprint, translate_language_key)
+    if(translate_language_key != "en"):
+        print(translatedmsg)
     # response_msg = strip_assistant(asst_output[-1])
     # print(response_msg, "\n")
-    transcribe_to_speech(msgtoprint, voice_model)
+    transcribe_to_speech(translatedmsg, voice_model)
 
     # hacky
     # exit prompt appears once as directive
