@@ -12,6 +12,17 @@ def strip_assistant(text):
     stripped_text = text.replace('\<\|im_start\|\>assistant', '').replace('\<\|im_end\|\>', '').replace('\n','')
     return stripped_text
 
+# set languages
+# set_lang = "english"
+set_lang = "japanese"
+# english
+if(set_lang == "english"):
+    lang_model="en-US-JennyMultilingualNeural"
+    speech_language="en-US"
+# japanese
+if(set_lang == "japanese"):
+    lang_model = "ja-JP-ShioriNeural"
+    speech_language="ja-JP"
 
 # Define the pattern
 # asst_pattern = r'\<\|im_start\|\>assistant\n(.*)\<\|im_end\|\>'
@@ -52,41 +63,71 @@ end_text = r"Thank you, a healthcare provider will see you shortly."
 # Response: {{this.output}}
 # {{~/each}}
 
-prompt = guidance(
-'''{{#system~}}
-You are a chatbot designed to talk to patients who have some medical concerns they want addressed.
-DO NOT ASK THE PATIENT MORE THAN ONE QUESTION AT A TIME.
+if(set_lang=="english"):
+    prompt = guidance(
+    '''{{#system~}}
+    You are a chatbot designed to talk to patients who have some medical concerns they want addressed.
+    DO NOT ASK THE PATIENT MORE THAN ONE QUESTION AT A TIME.
 
-Ask the patient information about the onset, location, duration, characteristics, aggravating factors, relieveing factors, timing, and severity of what the user is feeling.
-This is not to provide suggestions on what the user can do, but the information will be passed to a primary healthcare provider to follow up with the user. 
-Since you do not know the user's illness or sickness, ask qualifying questions about their problems.
-Avoid repeating what the patient just said back to them.
-If needed, ask for clarifications in a simple manner. Ask for these clarifications one at a time.
-Express empathy regarding the concerns and problems the patient is facing.
-Once the information has been gathered, output this text word for word: 'Thank you, a healthcare provider will see you shortly.'
-Please limit yourself to 50 tokens in the response, unless told.
-{{~/system}}
+    Ask the patient information about the onset, location, duration, characteristics, aggravating factors, relieveing factors, timing, and severity of what the user is feeling.
+    This is not to provide suggestions on what the user can do, but the information will be passed to a primary healthcare provider to follow up with the user. 
+    Since you do not know the user's illness or sickness, ask qualifying questions about their problems.
+    Avoid repeating what the patient just said back to them.
+    If needed, ask for clarifications in a simple manner. Ask for these clarifications one at a time.
+    Express empathy regarding the concerns and problems the patient is facing.
+    Once the information has been gathered, output this text word for word: 'Thank you, a healthcare provider will see you shortly.'
+    Please limit yourself to 50 tokens in the response, unless told.
+    {{~/system}}
 
 
-{{~#geneach 'conversation' stop=False}}
-{{#user~}}
-From the following prompt, extract information about the patient's problems to produce later:
-{{set 'this.user_text' (await 'user_text')}}
-{{~/user}}
-{{#assistant~}}
-{{gen 'this.ai_text' temperature=0.3 max_tokens=500}}
-{{~/assistant}}
-{{~/geneach}}''')
+    {{~#geneach 'conversation' stop=False}}
+    {{#user~}}
+    From the following prompt, extract information about the patient's problems to produce later:
+    {{set 'this.user_text' (await 'user_text')}}
+    {{~/user}}
+    {{#assistant~}}
+    {{gen 'this.ai_text' temperature=0.3 max_tokens=500}}
+    {{~/assistant}}
+    {{~/geneach}}''')
+elif(set_lang=="japanese"):
+    prompt = guidance(
+    '''{{#system~}}
+    あなたはチャットボットで、医療に関する悩みを抱えている患者と会話するように設計されています。
+    患者さんに一度に複数の質問をしないでください。
 
-initmsg = "What symptoms or medical concerns are you experiencing today?\n"
+    ユーザーが感じていることの発症、場所、期間、特徴、悪化要因、緩和要因、タイミング、深刻度に関する情報を患者に尋ねてください。
+    これは、ユーザーができることを提案するためではなく、ユーザーのフォローアップのために、主治医に情報を渡すためです。
+    ユーザーの病気や疾患を知らないので、ユーザーの問題点について適格な質問をする。
+    利用者が今言ったことを繰り返し聞き返すのは避けましょう。
+    必要であれば、簡単な方法で説明を求めます。このような説明は、一度にひとつずつお願いします。
+    患者さんが抱えている不安や問題に共感する。
+    情報を収集したら、このテキストを一字一句出力する：「ありがとうございます、医療従事者が間もなくお会いします」。
+    言われない限り、応答は50トークンまでにしてください。
+    {{~/system}}
+
+
+    {{~#geneach 'conversation' stop=False}}
+    {{#user~}}
+    次のプロンプトから、患者の問題点に関する情報を抽出して、後で制作してください：
+    {{set 'this.user_text' (await 'user_text')}}
+    {{~/user}}
+    {{#assistant~}}
+    {{gen 'this.ai_text' temperature=0.3 max_tokens=500}}
+    {{~/assistant}}
+    {{~/geneach}}''')
+
+if(set_lang == "english"):
+    initmsg = "What symptoms or medical concerns are you experiencing today?\n"
+elif(set_lang == "japanese"):
+    initmsg = "現在、どのような症状や医学的な不安を感じていますか？\n"
 print(initmsg)
-transcribe_to_speech(initmsg)
+transcribe_to_speech(initmsg, lang_model=lang_model)
 
 while True:
     # user_input = input("User: ")
     asst_output = []
     # user_text = str(user_input)
-    user_input = str(recognize_from_microphone())
+    user_input = str(recognize_from_microphone(speech_language=speech_language))
     print("\tUser said: {}".format(user_input))
     prompt = prompt(user_text = user_input, max_tokens = 50)
 
@@ -103,7 +144,7 @@ while True:
     print(msgtoprint)
     # response_msg = strip_assistant(asst_output[-1])
     # print(response_msg, "\n")
-    transcribe_to_speech(msgtoprint)
+    transcribe_to_speech(msgtoprint, lang_model=lang_model)
 
     # hacky
     # exit prompt appears once as directive
