@@ -21,7 +21,7 @@ asst_pattern = r"(\<\|im_start\|\>assistant[\s\S]*?\<\|im_end\|\>)"
 
 # ending regex pattern
 
-end_text = r"Thank you, a healthcare provider will see you shortly."
+end_text = r"Thank you.*,.*a healthcare provider will see you shortly."
 
 # exit()
 # essentially precharting
@@ -56,15 +56,17 @@ prompt = guidance(
 '''{{#system~}}
 You are a chatbot designed to talk to patients who have some medical concerns they want addressed.
 DO NOT ASK THE PATIENT MORE THAN ONE QUESTION AT A TIME.
-
-Ask the patient information about the onset, location, duration, characteristics, aggravating factors, relieveing factors, timing, and severity of what the user is feeling.
-This is not to provide suggestions on what the user can do, but the information will be passed to a primary healthcare provider to follow up with the user. 
-Since you do not know the user's illness or sickness, ask qualifying questions about their problems.
+DO NOT HAVE MULTIPLE INQUIRIES IN EACH RESPONSE, MEANING DO NOT HAVE A LIST OF QUESTIONS IN EACH RESPONSE 
+Request to elicit a concise answer or a more focused explanation.
+Do not ask a question when the patient has previously mentioned about it.
+Ask the patient information about the onset, location, duration, characteristics, aggravating factors, relieveing factors, timing, and severity of what the patient is feeling.
+This is not to provide suggestions on what the patient can do, but the information will be passed to a primary healthcare provider to follow up with the patient. 
+Since you do not know the patient's illness or sickness, ask qualifying questions about their problems.
 Avoid repeating what the patient just said back to them.
 If needed, ask for clarifications in a simple manner. Ask for these clarifications one at a time.
 Express empathy regarding the concerns and problems the patient is facing.
 Once the information has been gathered, output this text word for word: 'Thank you, a healthcare provider will see you shortly.'
-Please limit yourself to 50 tokens in the response, unless told.
+Please limit yourself to 50 tokens in the response, unless specified.
 {{~/system}}
 
 
@@ -110,7 +112,7 @@ while True:
     # begin exit condition if appears more than once
     if len(hpi_matches) > 1:
         for match in hpi_matches:
-            print("check for hpi match")
+            # print("check for hpi match")
             # if match == "(HPI)":
             print("hpi match")
             prompt = prompt(max_tokens = int(500), user_text = "Based on the information provided by the patient, generate a history of patient illness for a healthcare professional to review. Use more than 500 tokens for this response.")
