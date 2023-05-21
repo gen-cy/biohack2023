@@ -3,11 +3,22 @@ import re
 guidance.llm = guidance.llms.OpenAI("gpt-3.5-turbo")
 guidance.llm.cache.clear()
 
+# helpers
+
+def strip_assistant(text):
+    stripped_text = text.replace('\<\|im_start\|\>assistant\n', '').replace('\<\|im_end\|\>', '')
+    return stripped_text
+
+
 # Define the pattern
 # asst_pattern = r'\<\|im_start\|\>assistant\n(.*)\<\|im_end\|\>'
 
 hpi_pattern = r'\(HPI\) |  history of present illness'
 asst_pattern = r"(\<\|im_start\|\>assistant[\s\S]*?\<\|im_end\|\>)"
+
+# ending regex pattern
+
+end_text = r"Thank you, a healthcare provider will see you shortly."
 
 # exit()
 # essentially precharting
@@ -50,37 +61,41 @@ while True:
     prompt = prompt(user_text = str(user_input))
 
     asst_matches = re.findall(asst_pattern, str(prompt))
-    hpi_matches = re.findall(hpi_pattern, str(prompt))
-    for match in hpi_matches:
-        print("check for hpi match")
-        # if match == "(HPI)":
-        print("hpi match")
-        prompt = prompt(user_text = "Please generate the HPI.")
-        print("---\n{}\n---".format(prompt))
-        hpi_matches = re.findall(asst_pattern, str(prompt))
-        if hpi_matches:
-            for hpi in hpi_matches:
-                asst_output.append(hpi)
-        else:
-            print("No history of present illness found.")
-        # asst_matches = re.findall(asst_pattern, str(prompt))
-        # for match_inner in asst_matches:
-        #     asst_output.append(match_inner)
+    hpi_matches = re.findall(end_text, str(prompt))
+
+    # hacky
+    # exit prompt appears once as directive
+    # begin exit condition if appears more than once
+    if len(hpi_matches) > 1:
+        for match in hpi_matches:
+            print("check for hpi match")
+            # if match == "(HPI)":
+            print("hpi match")
+            prompt = prompt(user_text = "Please generate the HPI.")
+            print("---\n{}\n---".format(prompt))
+            hpi_matches = re.findall(asst_pattern, str(prompt))
+            if hpi_matches:
+                for hpi in hpi_matches:
+                    asst_output.append(hpi)
+            else:
+                print("No history of present illness found.")
+            # asst_matches = re.findall(asst_pattern, str(prompt))
+            # for match_inner in asst_matches:
+            #     asst_output.append(match_inner)
 
 
-            # print(prompt)
-            # exit()
-        # print(asst_output[-1], "\n")
-        print('---')
-        print(asst_output[-1])
-        exit()
+                # print(prompt)
+                # exit()
+            # print(asst_output[-1], "\n")
+            print('---')
+            print(asst_output[-1])
+            exit()
 
     for match in asst_matches:
         # print("INSIDE INSIDE INSIDE ------------")
         # print(match)
         asst_output.append(match)
     print("printing response")
-    print(asst_output[-1], "\n")
-    # print()
-    # print(prompt)
+    print(strip_assistant(asst_output[-1]), "\n")
+    
 
