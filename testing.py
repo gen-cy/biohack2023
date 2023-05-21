@@ -17,14 +17,14 @@ def select_language():
     transcribe_to_speech(prompt_menu)
     choice = input("Enter your choice (1, 2, or 3)")
     if choice == '1':
-        return "en-US"
+        return "en-US", "en-US-JennyMultilingualNeural"
     elif choice == '2':
-        return "hi-IN"
+        return "hi-IN", "hi-IN-SwaraNeural"
     elif choice == '3':
-        return "zh-CN"
+        return "zh-CN", "zh-CN-XiaoxiaoNeural"
     else:
         print("Invalid choice. Defaulting to English.")
-        return "en-US"
+        return "en-US", "en-US-JennyMultilingualNeural"
     
 
 # need to fix lol
@@ -76,15 +76,18 @@ prompt = guidance(
 '''{{#system~}}
 You are a chatbot designed to talk to patients who have some medical concerns they want addressed.
 DO NOT ASK THE PATIENT MORE THAN ONE QUESTION AT A TIME.
-
-Ask the patient information about the onset, location, duration, characteristics, aggravating factors, relieveing factors, timing, and severity of what the user is feeling.
-This is not to provide suggestions on what the user can do, but the information will be passed to a primary healthcare provider to follow up with the user. 
-Since you do not know the user's illness or sickness, ask qualifying questions about their problems.
+DO NOT HAVE MULTIPLE INQUIRIES IN EACH RESPONSE, MEANING DO NOT HAVE A LIST OF QUESTIONS IN EACH RESPONSE 
+Request to elicit a concise answer or a more focused explanation.
+Do not ask a question when the patient has previously mentioned about it.
+Ask the patient information about the onset, location, duration, characteristics, aggravating factors, relieveing factors, timing, and severity of what the patient is feeling.
+This is not to provide suggestions on what the patient can do, but the information will be passed to a primary healthcare provider to follow up with the patient. 
+Since you do not know the patient's illness or sickness, ask qualifying questions about their problems.
 Avoid repeating what the patient just said back to them.
 If needed, ask for clarifications in a simple manner. Ask for these clarifications one at a time.
 Express empathy regarding the concerns and problems the patient is facing.
+Depending on the response from the patient, adjust the language complexity to match the patient's language.
 Once the information has been gathered, output this text word for word: 'Thank you, a healthcare provider will see you shortly.'
-Please limit yourself to 50 tokens in the response, unless told.
+Please limit yourself to 50 tokens in the responses, unless specified.
 {{~/system}}
 
 
@@ -99,11 +102,11 @@ From the following prompt, extract information about the patient's problems to p
 {{~/geneach}}''')
 
 
-source_lang = select_language()
+source_lang, voice_model = select_language()
 
 initmsg = "What symptoms or medical concerns are you experiencing today?\n"
 print(initmsg)
-transcribe_to_speech(initmsg)
+transcribe_to_speech(initmsg, voice_model)
 
 while True:
     # user_input = input("User: ")
@@ -126,7 +129,7 @@ while True:
     print(msgtoprint)
     # response_msg = strip_assistant(asst_output[-1])
     # print(response_msg, "\n")
-    transcribe_to_speech(msgtoprint)
+    transcribe_to_speech(msgtoprint, voice_model)
 
     # hacky
     # exit prompt appears once as directive
