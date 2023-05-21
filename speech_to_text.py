@@ -9,7 +9,9 @@ def recognize_from_microphone():
     audio_config = speechsdk.audio.AudioConfig(use_default_microphone=True)
     speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config, audio_config=audio_config)
 
-    print("Speak into your microphone.")
+    input("\tHit enter when ready to talk: ")
+
+    print("\tSpeak into your microphone.")
     
     # Create an empty list to store recognized text
     recognized_text = []
@@ -27,7 +29,7 @@ def recognize_from_microphone():
     # Start continuous recognition
     speech_recognizer.start_continuous_recognition()
 
-    input("Press Enter to stop listening...")
+    input("\tPress Enter to stop listening...")
 
     # Stop recognition
     speech_recognizer.stop_continuous_recognition()
@@ -37,6 +39,6 @@ def recognize_from_microphone():
 
     return result
 
-text = recognize_from_microphone()
-print("Printing transcribed text now:\n")
-print(text)
+# text = recognize_from_microphone()
+# print("Printing transcribed text now:\n")
+# print(text)

@@ -1,12 +1,15 @@
 import guidance
 import re
+from text_to_speech import transcribe_to_speech
+from speech_to_text import recognize_from_microphone
 guidance.llm = guidance.llms.OpenAI("gpt-3.5-turbo")
 guidance.llm.cache.clear()
 
 # helpers
 
+# need to fix lol
 def strip_assistant(text):
-    stripped_text = text.replace('\<\|im_start\|\>assistant\n', '').replace('\<\|im_end\|\>', '')
+    stripped_text = text.replace('\<\|im_start\|\>assistant', '').replace('\<\|im_end\|\>', '').replace('\n','')
     return stripped_text
 
 
@@ -53,15 +56,32 @@ From the following prompt, extract information about the patient's problems to p
 {{gen 'this.ai_text' temperature=0.3 max_tokens=300}}
 {{~/assistant}}
 {{~/geneach}}''')
-print("What symptoms or medical concerns are you experiencing today?\n")
+initmsg = "What symptoms or medical concerns are you experiencing today?\n"
+print(initmsg)
+transcribe_to_speech(initmsg)
 
 while True:
-    user_input = input("User: ")
+    # user_input = input("User: ")
     asst_output = []
-    prompt = prompt(user_text = str(user_input))
+    # user_text = str(user_input)
+    user_input = str(recognize_from_microphone())
+    print("\tUser said: {}".format(user_input))
+    prompt = prompt(user_text = user_input)
 
     asst_matches = re.findall(asst_pattern, str(prompt))
     hpi_matches = re.findall(end_text, str(prompt))
+
+    for match in asst_matches:
+        # print("INSIDE INSIDE INSIDE ------------")
+        # print(match)
+        asst_output.append(match)
+
+    msgtoprint = asst_output[-1][21:-10]
+    print("printing response")
+    print(msgtoprint)
+    # response_msg = strip_assistant(asst_output[-1])
+    # print(response_msg, "\n")
+    transcribe_to_speech(msgtoprint)
 
     # hacky
     # exit prompt appears once as directive
@@ -71,7 +91,7 @@ while True:
             print("check for hpi match")
             # if match == "(HPI)":
             print("hpi match")
-            prompt = prompt(user_text = "Please generate the HPI.")
+            prompt = prompt(user_text = "Based on the information provided by the patient, generate a history of patient illness for a healthcare professional to review.")
             print("---\n{}\n---".format(prompt))
             hpi_matches = re.findall(asst_pattern, str(prompt))
             if hpi_matches:
@@ -90,12 +110,5 @@ while True:
             print('---')
             print(asst_output[-1])
             exit()
-
-    for match in asst_matches:
-        # print("INSIDE INSIDE INSIDE ------------")
-        # print(match)
-        asst_output.append(match)
-    print("printing response")
-    print(strip_assistant(asst_output[-1]), "\n")
     
 
