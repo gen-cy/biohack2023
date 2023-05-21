@@ -48,7 +48,7 @@ asst_pattern = r"(\<\|im_start\|\>assistant[\s\S]*?\<\|im_end\|\>)"
 
 # ending regex pattern
 
-end_text = r"Thank you, a healthcare provider will see you shortly."
+end_text = r"healthcare provider"
 
 # exit()
 # essentially precharting
@@ -122,7 +122,7 @@ while True:
     prompt = prompt(user_text = user_input, max_tokens = 50)
 
     asst_matches = re.findall(asst_pattern, str(prompt))
-    hpi_matches = re.findall(end_text, str(prompt))
+    # hpi_matches = re.findall(end_text, str(prompt))
 
     for match in asst_matches:
         # print("INSIDE INSIDE INSIDE ------------")
@@ -138,6 +138,7 @@ while True:
     # response_msg = strip_assistant(asst_output[-1])
     # print(response_msg, "\n")
     transcribe_to_speech(translatedmsg, voice_model)
+    hpi_matches = re.findall(end_text, str(msgtoprint))
 
     # hacky
     # exit prompt appears once as directive
