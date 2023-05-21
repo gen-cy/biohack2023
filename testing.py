@@ -14,10 +14,13 @@ def select_language():
     \n\t2. Hindi\n
     \n\t3. Chinese\n
     \n\t4. Japanese\n
+    \n\t5. Bengali\n
+    \n\t6. Gujarati\n
+    \n\t7. Kannada\n
     '''
     print(prompt_menu)
     transcribe_to_speech(prompt_menu)
-    choice = input("Enter your choice (1, 2, 3 or 4): ")
+    choice = input("Enter your choice (1, 2, 3, 4, 5, 6, or 7): ")
     if choice == '1':
         return "en-US", "en-US-JennyMultilingualNeural", "en"
     elif choice == '2':
@@ -26,6 +29,12 @@ def select_language():
         return "zh-CN", "zh-CN-XiaoxiaoNeural", "zh-CN"
     elif choice == '4':
         return "ja-JP", "ja-JP-ShioriNeural", "ja"
+    elif choice == '5':
+        return "bn-IN", "bn-IN-TanishaaNeural", "bn"
+    elif choice == '6':
+        return "gu-IN", "gu-IN-NiranjanNeural", "gu"
+    elif choice == '7':
+        return "kn-IN", "kn-IN-GaganNeural", "kn"
     else:
         print("Invalid choice. Defaulting to English.")
         return "en-US", "en-US-JennyMultilingualNeural"
