@@ -1,7 +1,7 @@
 import os
 import azure.cognitiveservices.speech as speechsdk
 
-def transcribe_to_speech():
+def transcribe_to_speech(text):
 
     # This example requires environment variables named "SPEECH_KEY" and "SPEECH_REGION"
     speech_config = speechsdk.SpeechConfig(subscription=os.environ.get('SPEECH_KEY'), region=os.environ.get('SPEECH_REGION'))
@@ -13,8 +13,8 @@ def transcribe_to_speech():
     speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=audio_config)
 
     # Get text from the console and synthesize to the default speaker.
-    print("Enter some text that you want to speak >")
-    text = input()
+    # print("Enter some text that you want to speak >")
+    # text = input()
 
     speech_synthesis_result = speech_synthesizer.speak_text_async(text).get()
 
@@ -28,4 +28,4 @@ def transcribe_to_speech():
                 print("Error details: {}".format(cancellation_details.error_details))
                 print("Did you set the speech resource key and region values?")
 
-transcribe_to_speech()
+transcribe_to_speech("Pass in text as arguments when calling this function")
