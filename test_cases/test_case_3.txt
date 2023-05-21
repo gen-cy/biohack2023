@@ -1,0 +1,9 @@
+Patient 3 (Michael) - Sinusitis:
+1. Onset: I started experiencing these symptoms a little while ago.
+2. Location: The symptoms are centered around my facial area.
+3. Duration: I've had these symptoms for some time now.
+4. Characteristics: I have some discomfort, pressure, and congestion in my face.
+5. Aggravating factors: I notice that certain actions or changes in the environment worsen my symptoms.
+6. Relieving factors: I have tried a few things that provide temporary relief from the congestion.
+7. Timing: The symptoms come and go throughout the day.
+8. Severity: I would rate the severity of my symptoms as moderate.

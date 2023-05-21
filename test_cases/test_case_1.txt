@@ -1,0 +1,9 @@
+Patient 1 (John) - COVID-19 symptoms:
+1. Onset: I started noticing these symptoms a while ago.
+2. Location: I feel the symptoms in my respiratory area.
+3. Duration: It has been ongoing for some time now.
+4. Characteristics: The symptoms are noticeable but not too severe. I experience coughing, fever, and some difficulty breathing.
+5. Aggravating factors: I feel worse when I exert myself physically or take deep breaths.
+6. Relieving factors: I haven't found anything that consistently alleviates the symptoms.
+7. Timing: The symptoms have been persisting without significant improvement.
+8. Severity: I would rate the severity of my symptoms as moderate.
