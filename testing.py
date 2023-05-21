@@ -36,26 +36,48 @@ end_text = r"Thank you, a healthcare provider will see you shortly."
 # generates HPI unprompted
 #   perhaps catch w/regex and return message along lines of 'doctor will see you shortly'
 
+# examples = [
+#     {
+#         'input': "My head hurts.",
+#         'output': "I'm sorry to hear that. Can you tell me when this began?",
+#     },
+#     {
+#         'input': "I can't walk properly with my left leg.",
+#         'output': "I'm sorry to hear that, can you tell me when this problem began?",
+#     },
+# ]
+
+# {{~#each examples}}
+# User input: {{this.input}}
+# Response: {{this.output}}
+# {{~/each}}
+
 prompt = guidance(
 '''{{#system~}}
 You are a chatbot designed to talk to patients who have some medical concerns they want addressed.
+DO NOT ASK THE PATIENT MORE THAN ONE QUESTION AT A TIME.
+
 Ask the patient information about the onset, location, duration, characteristics, aggravating factors, relieveing factors, timing, and severity of what the user is feeling.
 This is not to provide suggestions on what the user can do, but the information will be passed to a primary healthcare provider to follow up with the user. 
-Do not ask the patient more than one question at a time.
 Since you do not know the user's illness or sickness, ask qualifying questions about their problems.
 Avoid repeating what the patient just said back to them.
 If needed, ask for clarifications in a simple manner. Ask for these clarifications one at a time.
+Express empathy regarding the concerns and problems the patient is facing.
 Once the information has been gathered, output this text word for word: 'Thank you, a healthcare provider will see you shortly.'
+Please limit yourself to 50 tokens in the response, unless told.
 {{~/system}}
+
+
 {{~#geneach 'conversation' stop=False}}
 {{#user~}}
 From the following prompt, extract information about the patient's problems to produce later:
 {{set 'this.user_text' (await 'user_text')}}
 {{~/user}}
 {{#assistant~}}
-{{gen 'this.ai_text' temperature=0.3 max_tokens=300}}
+{{gen 'this.ai_text' temperature=0.3 max_tokens=500}}
 {{~/assistant}}
 {{~/geneach}}''')
+
 initmsg = "What symptoms or medical concerns are you experiencing today?\n"
 print(initmsg)
 transcribe_to_speech(initmsg)
@@ -66,7 +88,7 @@ while True:
     # user_text = str(user_input)
     user_input = str(recognize_from_microphone())
     print("\tUser said: {}".format(user_input))
-    prompt = prompt(user_text = user_input)
+    prompt = prompt(user_text = user_input, max_tokens = 50)
 
     asst_matches = re.findall(asst_pattern, str(prompt))
     hpi_matches = re.findall(end_text, str(prompt))
@@ -91,7 +113,7 @@ while True:
             print("check for hpi match")
             # if match == "(HPI)":
             print("hpi match")
-            prompt = prompt(user_text = "Based on the information provided by the patient, generate a history of patient illness for a healthcare professional to review.")
+            prompt = prompt(max_tokens = int(500), user_text = "Based on the information provided by the patient, generate a history of patient illness for a healthcare professional to review. Use more than 500 tokens for this response.")
             print("---\n{}\n---".format(prompt))
             hpi_matches = re.findall(asst_pattern, str(prompt))
             if hpi_matches:
