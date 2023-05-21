@@ -114,7 +114,7 @@ while True:
             # if match == "(HPI)":
             print("hpi match")
             prompt = prompt(max_tokens = int(500), user_text = "Based on the information provided by the patient, generate a history of patient illness for a healthcare professional to review. Use more than 500 tokens for this response.")
-            print("---\n{}\n---".format(prompt))
+            # print("---\n{}\n---".format(prompt))
             hpi_matches = re.findall(asst_pattern, str(prompt))
             if hpi_matches:
                 for hpi in hpi_matches:
@@ -130,7 +130,7 @@ while True:
                 # exit()
             # print(asst_output[-1], "\n")
             print('---')
-            print(asst_output[-1])
+            print(asst_output[-1][21:-10])
             exit()
     
 
