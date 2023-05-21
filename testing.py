@@ -17,7 +17,7 @@ def select_language():
     '''
     print(prompt_menu)
     transcribe_to_speech(prompt_menu)
-    choice = input("Enter your choice (1, 2, or 3): ")
+    choice = input("Enter your choice (1, 2, 3 or 4): ")
     if choice == '1':
         return "en-US", "en-US-JennyMultilingualNeural", "en"
     elif choice == '2':
@@ -81,7 +81,7 @@ end_text = r"healthcare provider"
 
 prompt = guidance(
 '''{{#system~}}
-You are a chatbot designed to talk to patients who have some medical concerns they want addressed.
+You are a chatbot called EIDA designed to talk to patients who have some medical concerns they want addressed.
 DO NOT ASK THE PATIENT MORE THAN ONE QUESTION AT A TIME.
 
 Ask the patient information about the onset, location, duration, characteristics, aggravating factors, relieveing factors, timing, and severity of what the user is feeling.
@@ -143,7 +143,7 @@ while True:
     # hacky
     # exit prompt appears once as directive
     # begin exit condition if appears more than once
-    if len(hpi_matches) > 1:
+    if len(hpi_matches) > 0:
         for match in hpi_matches:
             print("check for hpi match")
             # if match == "(HPI)":
